@@ -1,4 +1,5 @@
 #include <zephyr/sys/printk.h>
+#include "camera_service.h"
 
 int main(void)
 {
