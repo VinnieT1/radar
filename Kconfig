@@ -1,0 +1,56 @@
+menu "Zephyr"
+source "Kconfig.zephyr"
+endmenu
+
+menu "Custom Module Configuration"
+
+config GPIO
+	bool "Enable GPIO support"
+	default y
+	help
+	  Enable support for General Purpose Input/Output (GPIO) in the application.
+
+config ZBUS
+	bool "Enable Zbus support"
+	default y
+	help
+	  Enable the Zbus messaging system for inter-thread or inter-core communication.
+
+config ZBUS_MSG_SUBSCRIBER
+	bool "Enable Zbus message subscriber"
+	default y
+	depends on ZBUS
+	help
+	  Enable support for subscribing to messages on the Zbus.
+
+config TEST_RANDOM_GENERATOR
+	bool "Enable test random generator"
+	default y
+	help
+	  Enable the pseudo-random generator for test purposes.
+
+config QEMU_ICOUNT
+	bool "Enable QEMU instruction counter"
+	default n
+	help
+	  Enable QEMU instruction counting. Useful for deterministic execution in QEMU.
+
+config NTP_SERVER
+    string "NTP server address"
+    default "pool.ntp.br"
+    help
+      Set the NTP server address for time synchronization.
+
+config SENSOR_DISTANCE
+    int "Distance from one sensor to another in mm"
+    default 1000
+    help
+      Set the distance sensor value in mm.
+
+config SPEED_LIMIT
+	int "Speed limit in m/s"
+	default 20 # 72 km/h
+	help
+	  Set the speed limit for the application in meters per second.
+
+endmenu
