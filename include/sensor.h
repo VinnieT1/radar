@@ -6,7 +6,7 @@
 enum sensor_evt_type {
 	SENSOR_EVT_UNDEFINED,
 	SENSOR_EVT_DETECTED_FIRST,
-    SENSOR_EVT_DETECTED_SECOND,
+	SENSOR_EVT_DETECTED_SECOND,
 };
 
 struct msg_sensor_evt {

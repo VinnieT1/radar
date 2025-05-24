@@ -13,6 +13,16 @@
             gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
         };
     };
+
+    chosen {
+		zephyr,display = &dummy_dc;
+	};
+
+	dummy_dc: dummy_dc {
+		compatible = "zephyr,dummy-dc";
+		height = <240>;
+		width = <320>;
+	};
 };
 
 &gpio0 {

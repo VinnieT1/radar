@@ -9,7 +9,7 @@
 #include <zephyr/sys/time_units.h>
 
 ZBUS_CHAN_DEFINE(chan_sensor_evt, struct msg_sensor_evt, NULL, NULL, ZBUS_OBSERVERS_EMPTY,
-         ZBUS_MSG_INIT(.evt = SENSOR_EVT_UNDEFINED));
+		 ZBUS_MSG_INIT(.evt = SENSOR_EVT_UNDEFINED));
 
 #define SENSOR1 DT_NODELABEL(sensor1)
 #define SENSOR2 DT_NODELABEL(sensor2)
@@ -32,21 +32,21 @@ static struct gpio_callback sensor2_cb_data;
  */
 void sensor_activated(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
-    struct msg_sensor_evt msg = {.evt = SENSOR_EVT_UNDEFINED, /*.timestamp = {0}*/};
+	struct msg_sensor_evt msg = {.evt = SENSOR_EVT_UNDEFINED};
 
-    if (gpio_pin_get_dt(&sensor1)) {
-        msg.evt = SENSOR_EVT_DETECTED_FIRST;
+	if (gpio_pin_get_dt(&sensor1)) {
+		msg.evt = SENSOR_EVT_DETECTED_FIRST;
 
-        printk("sensor1 activated at %lld\n", k_uptime_get());
-    } else if (gpio_pin_get_dt(&sensor2)) {
-        msg.evt = SENSOR_EVT_DETECTED_SECOND;
+		printk("sensor1 activated at %lld\n", k_uptime_get());
+	} else if (gpio_pin_get_dt(&sensor2)) {
+		msg.evt = SENSOR_EVT_DETECTED_SECOND;
 
-        printk("sensor2 activated at %lld\n", k_uptime_get());
-    } else {
-        return;
-    }
+		printk("sensor2 activated at %lld\n", k_uptime_get());
+	} else {
+		return;
+	}
 
-    zbus_chan_pub(&chan_sensor_evt, &msg, K_NO_WAIT);
+	zbus_chan_pub(&chan_sensor_evt, &msg, K_NO_WAIT);
 }
 
 /**
@@ -60,41 +60,42 @@ void sensor_activated(const struct device *dev, struct gpio_callback *cb, uint32
  */
 int sensor_init(void)
 {
-    int err;
-    // struct sntp_time time_test;
+	int err;
+	// struct sntp_time time_test;
 
-    if (!gpio_is_ready_dt(&sensor1)) {
-        printk("Error: sensor1 device %s is not ready\n", sensor1.port->name);
-        return -ENODEV;
-    }
-    if (!gpio_is_ready_dt(&sensor2)) {
-        printk("Error: sensor2 device %s is not ready\n", sensor2.port->name);
-        return -ENODEV;
-    }
+	if (!gpio_is_ready_dt(&sensor1)) {
+		printk("Error: sensor1 device %s is not ready\n", sensor1.port->name);
+		return -ENODEV;
+	}
+	if (!gpio_is_ready_dt(&sensor2)) {
+		printk("Error: sensor2 device %s is not ready\n", sensor2.port->name);
+		return -ENODEV;
+	}
 
-    err = gpio_pin_configure_dt(&sensor1, GPIO_INPUT);
-    if (err) {
-        printk("Error %d: failed to configure %s pin %d\n", err, sensor1.port->name, sensor1.pin);
-        return err;
-    }
+	err = gpio_pin_configure_dt(&sensor1, GPIO_INPUT);
+	if (err) {
+		printk("Error %d: failed to configure %s pin %d\n", err, sensor1.port->name,
+		       sensor1.pin);
+		return err;
+	}
 
-    err = gpio_pin_configure_dt(&sensor2, GPIO_INPUT);
-    if (err) {
-        printk("Error %d: failed to configure %s pin %d\n", err, sensor2.port->name, sensor2.pin);
-        return err;
-    }
+	err = gpio_pin_configure_dt(&sensor2, GPIO_INPUT);
+	if (err) {
+		printk("Error %d: failed to configure %s pin %d\n", err, sensor2.port->name,
+		       sensor2.pin);
+		return err;
+	}
 
+	// err = sntp_simple(CONFIG_NTP_SERVER, 5000, &time_test);
+	// if (err) {
+	//     printk("SNTP request failed: %d", err);
 
-    // err = sntp_simple(CONFIG_NTP_SERVER, 5000, &time_test);
-    // if (err) {
-    //     printk("SNTP request failed: %d", err);
-        
-    // } else {
-    //     printk("Time from %s: %llu s, %u us", CONFIG_NTP_SERVER,
-    //             time_test.seconds, time_test.fraction);
-    // }
+	// } else {
+	//     printk("Time from %s: %llu s, %u us", CONFIG_NTP_SERVER,
+	//             time_test.seconds, time_test.fraction);
+	// }
 
-    return 0;
+	return 0;
 }
 
 /**
@@ -107,25 +108,27 @@ int sensor_init(void)
  */
 int sensor_enable_interrupts(void)
 {
-    int ret;
+	int ret;
 
-    ret = gpio_pin_interrupt_configure_dt(&sensor1, GPIO_INT_EDGE_FALLING);
-    if (ret != 0) {
-        printk("Error %d: failed to configure interrupt on %s pin %d\n", ret, sensor1.port->name, sensor1.pin);
-        return ret;
-    }
+	ret = gpio_pin_interrupt_configure_dt(&sensor1, GPIO_INT_EDGE_FALLING);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n", ret,
+		       sensor1.port->name, sensor1.pin);
+		return ret;
+	}
 
-    ret = gpio_pin_interrupt_configure_dt(&sensor2, GPIO_INT_EDGE_FALLING);
-    if (ret != 0) {
-        printk("Error %d: failed to configure interrupt on %s pin %d\n", ret, sensor2.port->name, sensor2.pin);
-        return ret;
-    }
+	ret = gpio_pin_interrupt_configure_dt(&sensor2, GPIO_INT_EDGE_FALLING);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n", ret,
+		       sensor2.port->name, sensor2.pin);
+		return ret;
+	}
 
-    gpio_init_callback(&sensor1_cb_data, sensor_activated, BIT(sensor1.pin));
-    gpio_add_callback(sensor1.port, &sensor1_cb_data);
+	gpio_init_callback(&sensor1_cb_data, sensor_activated, BIT(sensor1.pin));
+	gpio_add_callback(sensor1.port, &sensor1_cb_data);
 
-    gpio_init_callback(&sensor2_cb_data, sensor_activated, BIT(sensor2.pin));
-    gpio_add_callback(sensor2.port, &sensor2_cb_data);
+	gpio_init_callback(&sensor2_cb_data, sensor_activated, BIT(sensor2.pin));
+	gpio_add_callback(sensor2.port, &sensor2_cb_data);
 
-    return 0;
+	return 0;
 }
