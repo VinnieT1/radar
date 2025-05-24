@@ -112,7 +112,8 @@ void picture_transceiver_thread(void *ptr1, void *ptr2, void *ptr3)
 			}
 			break;
 		case MSG_CAMERA_EVT_TYPE_ERROR:
-			printk("Error on camera!: %d\n", msg.error_code);
+			printf("Camera error, trying again...");
+			camera_api_capture(K_MSEC(5));
 			break;
 		default:
 			break;
