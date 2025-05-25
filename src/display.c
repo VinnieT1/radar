@@ -78,8 +78,8 @@ void display_thread(void *ptr1, void *ptr2, void *ptr3)
 
 		rounded_velocity = (msg.velocity > CONFIG_RADAR_SPEED_LIMIT_KMH &&
 				    msg.velocity < CONFIG_RADAR_SPEED_LIMIT_KMH + 1)
-					   ? (uint8_t)msg.velocity + 1
-					   : (uint8_t)msg.velocity;
+					   ? (uint16_t)msg.velocity + 1
+					   : (uint16_t)msg.velocity;
 
 		snprintf(display_text, sizeof(display_text), "\t%d %s", rounded_velocity,
 			 msg.is_over_limit ? "OVER LIMIT" : "OK");
