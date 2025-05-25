@@ -18,7 +18,5 @@ int main(void)
 		printf("Error on sensor_enable_interrupts\n");
 	}
 
-	// err =
-
 	return 0;
 }
