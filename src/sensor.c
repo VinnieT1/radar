@@ -23,7 +23,7 @@ static struct gpio_callback sensor2_cb_data;
 /**
  * @brief Sensor activated callback function.
  *
- * This function is called when the sensor is activated (e.g., rising edge).
+ * This function is called when the sensor is activated (e.g., falling edge).
  * It sends a message to the zbus channel with the event type.
  *
  * @param dev Pointer to the device structure for the driver instance.
