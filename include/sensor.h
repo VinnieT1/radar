@@ -1,7 +1,6 @@
 #ifndef _SENSOR_H_
 #define _SENSOR_H_
 #include <zephyr/zbus/zbus.h>
-// #include <zephyr/net/sntp.h>
 
 enum sensor_evt_type {
 	SENSOR_EVT_UNDEFINED,
@@ -11,7 +10,6 @@ enum sensor_evt_type {
 
 struct msg_sensor_evt {
 	enum sensor_evt_type evt;
-	// struct sntp_time timestamp;
 };
 
 ZBUS_CHAN_DECLARE(chan_sensor_evt);
