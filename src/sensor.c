@@ -61,7 +61,6 @@ void sensor_activated(const struct device *dev, struct gpio_callback *cb, uint32
 int sensor_init(void)
 {
 	int err;
-	// struct sntp_time time_test;
 
 	if (!gpio_is_ready_dt(&sensor1)) {
 		printk("Error: sensor1 device %s is not ready\n", sensor1.port->name);
@@ -85,15 +84,6 @@ int sensor_init(void)
 		       sensor2.pin);
 		return err;
 	}
-
-	// err = sntp_simple(CONFIG_NTP_SERVER, 5000, &time_test);
-	// if (err) {
-	//     printk("SNTP request failed: %d", err);
-
-	// } else {
-	//     printk("Time from %s: %llu s, %u us", CONFIG_NTP_SERVER,
-	//             time_test.seconds, time_test.fraction);
-	// }
 
 	return 0;
 }
