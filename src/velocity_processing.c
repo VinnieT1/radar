@@ -5,10 +5,7 @@
 #include "camera_service.h"
 #include "display.h"
 
-ZBUS_CHAN_DECLARE(chan_sensor_evt);
-
 ZBUS_MSG_SUBSCRIBER_DEFINE(msub_sensor_evt);
-ZBUS_MSG_SUBSCRIBER_DEFINE(msub_display_evt);
 
 ZBUS_CHAN_ADD_OBS(chan_sensor_evt, msub_sensor_evt, 3);
 
@@ -28,8 +25,6 @@ void velocity_processing_thread(void *ptr1, void *ptr2, void *ptr3)
 
 	struct msg_sensor_evt msg;
 	const struct zbus_channel *chan;
-
-	struct msg_display_data display_data;
 
 	while (1) {
 		err = zbus_sub_wait_msg(&msub_sensor_evt, &chan, &msg, K_FOREVER);
@@ -69,9 +64,6 @@ void velocity_processing_thread(void *ptr1, void *ptr2, void *ptr3)
 				}
 
 				has_received_first = false;
-
-				display_data.is_over_limit = is_over_limit;
-				display_data.velocity = velocity;
 
 				display_api_send(velocity, is_over_limit, K_FOREVER);
 			} else {
