@@ -52,11 +52,6 @@ static int is_valid_plate(const char plate[])
 		   isdigit(processed_plate[4]) && isdigit(processed_plate[5]) &&
 		   isdigit(processed_plate[6])) {
 		is_valid = true;
-	} else if (isupper(processed_plate[0]) && isupper(processed_plate[1]) &&
-		   isdigit(processed_plate[2]) && isdigit(processed_plate[3]) &&
-		   isdigit(processed_plate[4]) && isupper(processed_plate[5]) &&
-		   isupper(processed_plate[6])) {
-		is_valid = true;
 	}
 
 	return is_valid ? 0 : -EINVAL;
@@ -83,11 +78,10 @@ void picture_transceiver_thread(void *ptr1, void *ptr2, void *ptr3)
 	ARG_UNUSED(ptr3);
 
 	int err;
+	struct msg_camera_evt msg;
+	const struct zbus_channel *chan;
 
 	while (1) {
-		struct msg_camera_evt msg;
-		const struct zbus_channel *chan;
-
 		err = zbus_sub_wait_msg(&msub_camera_evt, &chan, &msg, K_FOREVER);
 		if (err) {
 			continue;
