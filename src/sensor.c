@@ -108,20 +108,20 @@ int sensor_init(void)
  */
 int sensor_enable_interrupts(void)
 {
-	int ret;
+	int err;
 
-	ret = gpio_pin_interrupt_configure_dt(&sensor1, GPIO_INT_EDGE_FALLING);
-	if (ret != 0) {
-		printk("Error %d: failed to configure interrupt on %s pin %d\n", ret,
+	err = gpio_pin_interrupt_configure_dt(&sensor1, GPIO_INT_EDGE_FALLING);
+	if (err != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n", err,
 		       sensor1.port->name, sensor1.pin);
-		return ret;
+		return err;
 	}
 
-	ret = gpio_pin_interrupt_configure_dt(&sensor2, GPIO_INT_EDGE_FALLING);
-	if (ret != 0) {
-		printk("Error %d: failed to configure interrupt on %s pin %d\n", ret,
+	err = gpio_pin_interrupt_configure_dt(&sensor2, GPIO_INT_EDGE_FALLING);
+	if (err != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n", err,
 		       sensor2.port->name, sensor2.pin);
-		return ret;
+		return err;
 	}
 
 	gpio_init_callback(&sensor1_cb_data, sensor_activated, BIT(sensor1.pin));
