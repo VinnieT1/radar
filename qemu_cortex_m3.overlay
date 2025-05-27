@@ -36,3 +36,7 @@
     #gpio-cells = < 0x2 >;
     phandle = < 0x1 >;
 };
+
+&eth {
+    status = "okay";
+};
