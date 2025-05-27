@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <zephyr/net/sntp.h>
 
 ZBUS_MSG_SUBSCRIBER_DEFINE(msub_camera_evt);
 
@@ -60,13 +61,23 @@ static int is_valid_plate(const char plate[])
 static int validate_and_send(const char plate[], const char hash[])
 {
 	int err;
+	struct sntp_time ts;
+	char server_addr[64] = CONFIG_NTP_SERVER;
+
 	err = is_valid_plate(plate);
 
 	if (err) {
 		return err;
 	}
 
-	printf("TODO: SEND TO SERVER...\n");
+	err = sntp_simple(server_addr, 500, &ts);
+	if (err) {
+		return err;
+	}
+
+	printf("Time request successful\n\tTime retrieved: %llu.%u\n", ts.seconds, ts.fraction);
+
+	// SEND TO PYTHON SERVER
 
 	return 0;
 }
@@ -95,10 +106,12 @@ void picture_transceiver_thread(void *ptr1, void *ptr2, void *ptr3)
 			err = validate_and_send(msg.captured_data->plate, msg.captured_data->hash);
 			switch (err) {
 			case 0:
-				printf("Sent to server\n");
 				break;
 			case -EINVAL:
 				printf("Invalid plate...\n");
+				break;
+			case -ETIMEDOUT:
+				printf("Server request timed out\n");
 				break;
 			default:
 				printf("Unexpected error: %d", err);
