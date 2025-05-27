@@ -49,7 +49,7 @@ config RADAR_SENSOR_DISTANCE_MM
 
 config RADAR_SPEED_LIMIT_KMH
 	int "Speed limit in km/h"
-	default 72
+	default 70
 	help
 	  Set the speed limit for the application in meters per second.
 
