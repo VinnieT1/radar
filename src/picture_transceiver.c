@@ -10,6 +10,15 @@ ZBUS_MSG_SUBSCRIBER_DEFINE(msub_camera_evt);
 
 ZBUS_CHAN_ADD_OBS(chan_camera_evt, msub_camera_evt, 3);
 
+/**
+ * @brief Removes spaces from a license plate string.
+ *
+ * This function takes a license plate string and creates a new string
+ * with all spaces removed.
+ *
+ * @param plate The input license plate string that may contain spaces
+ * @param result The output buffer where the processed string will be stored
+ */
 static void remove_spaces_from_plate(const char plate[], char result[])
 {
 	uint8_t k = 0;
@@ -24,6 +33,16 @@ static void remove_spaces_from_plate(const char plate[], char result[])
 	result[k] = '\0';
 }
 
+/**
+ * @brief Validates if a license plate follows supported format patterns.
+ *
+ * This function checks if a license plate follows one of the valid Mercosur
+ * country formats (Argentina, Brazil, Paraguay, Uruguay, Venezuela).
+ * The plate must be 7 characters after removing spaces.
+ *
+ * @param plate The license plate string to validate
+ * @return 0 if the plate is valid, -EINVAL if invalid
+ */
 static int is_valid_plate(const char plate[])
 {
 	char processed_plate[16];
@@ -58,6 +77,17 @@ static int is_valid_plate(const char plate[])
 	return is_valid ? 0 : -EINVAL;
 }
 
+/**
+ * @brief Validates a license plate and sends the data with timestamp.
+ *
+ * This function validates the license plate format, gets the current time
+ * from an NTP server, adjusts it to Brazil time zone, and prepares the 
+ * data for transmission to a server.
+ *
+ * @param plate The license plate string to process
+ * @param hash The hash associated with the license plate
+ * @return 0 on success, negative error code on failure
+ */
 static int validate_and_send(const char plate[], const char hash[])
 {
 	int err;
@@ -89,6 +119,17 @@ static int validate_and_send(const char plate[], const char hash[])
 	return 0;
 }
 
+/**
+ * @brief Main thread for processing and transmitting camera events.
+ *
+ * This thread waits for camera events from the zbus channel, processes the 
+ * captured license plate data, validates it, and sends it to the server.
+ * It also handles camera errors by requesting a new capture.
+ *
+ * @param ptr1 Unused thread parameter
+ * @param ptr2 Unused thread parameter
+ * @param ptr3 Unused thread parameter
+ */
 void picture_transceiver_thread(void *ptr1, void *ptr2, void *ptr3)
 {
 	ARG_UNUSED(ptr1);

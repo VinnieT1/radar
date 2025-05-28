@@ -15,6 +15,17 @@ ZBUS_MSG_SUBSCRIBER_DEFINE(msub_display_data);
 
 ZBUS_CHAN_ADD_OBS(chan_display_data, msub_display_data, 3);
 
+/**
+ * @brief Publishes velocity data to the display channel.
+ *
+ * This function creates a display data message with the provided velocity and
+ * over-limit status, then publishes it to the display channel using zbus.
+ *
+ * @param velocity The calculated vehicle velocity to display
+ * @param is_over_limit Boolean indicating if the velocity exceeds the speed limit
+ * @param timeout The maximum time to wait for publishing the message
+ * @return 0 on success, -EINVAL on failure
+ */
 int display_api_send(double velocity, bool is_over_limit, k_timeout_t timeout)
 {
 	struct msg_display_data msg = {.velocity = velocity, .is_over_limit = is_over_limit};
@@ -22,6 +33,18 @@ int display_api_send(double velocity, bool is_over_limit, k_timeout_t timeout)
 	return zbus_chan_pub(&chan_display_data, &msg, timeout);
 }
 
+/**
+ * @brief Main display handling thread function.
+ *
+ * This thread initializes the display device, configures it based on pixel format
+ * capabilities, and then enters a loop waiting for velocity data messages.
+ * When new data arrives, it formats the text with velocity and limit status,
+ * then writes it to the display device.
+ *
+ * @param ptr1 Unused thread parameter
+ * @param ptr2 Unused thread parameter
+ * @param ptr3 Unused thread parameter
+ */
 void display_thread(void *ptr1, void *ptr2, void *ptr3)
 {
 	ARG_UNUSED(ptr1);

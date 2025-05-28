@@ -9,6 +9,18 @@ ZBUS_MSG_SUBSCRIBER_DEFINE(msub_sensor_evt);
 
 ZBUS_CHAN_ADD_OBS(chan_sensor_evt, msub_sensor_evt, 3);
 
+/**
+ * @brief Main thread for processing velocity measurements from sensors.
+ *
+ * This thread waits for sensor events from the zbus channel and calculates
+ * vehicle velocity based on the time between two sensor activations. It detects
+ * speeding violations, triggers the camera when vehicles exceed the speed limit,
+ * and sends velocity data to the display system.
+ *
+ * @param ptr1 Unused thread parameter
+ * @param ptr2 Unused thread parameter
+ * @param ptr3 Unused thread parameter
+ */
 void velocity_processing_thread(void *ptr1, void *ptr2, void *ptr3)
 {
 	ARG_UNUSED(ptr1);
