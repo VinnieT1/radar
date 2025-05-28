@@ -63,9 +63,10 @@ static int validate_and_send(const char plate[], const char hash[])
 	int err;
 	struct sntp_time ts;
 	char server_addr[64] = CONFIG_NTP_SERVER;
+	time_t brazil_time;
+	struct tm *brazil_tm;
 
 	err = is_valid_plate(plate);
-
 	if (err) {
 		return err;
 	}
@@ -75,7 +76,13 @@ static int validate_and_send(const char plate[], const char hash[])
 		return err;
 	}
 
-	printf("Time request successful\n\tTime retrieved: %llu.%u\n", ts.seconds, ts.fraction);
+	brazil_time = ts.seconds - (3 * 3600);
+	brazil_tm = gmtime(&brazil_time);
+
+	printk("Photo taken at: %04d-%02d-%02d %02d:%02d:%02d (Brazil time)\n",
+		brazil_tm->tm_year + 1900, brazil_tm->tm_mon + 1, brazil_tm->tm_mday,
+		brazil_tm->tm_hour, brazil_tm->tm_min, brazil_tm->tm_sec);
+
 
 	// SEND TO PYTHON SERVER
 
