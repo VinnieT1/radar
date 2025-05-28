@@ -51,6 +51,24 @@ config RADAR_SPEED_LIMIT_KMH
 	int "Speed limit in km/h"
 	default 70
 	help
-	  Set the speed limit for the application in meters per second.
+	  Set the speed limit for the application in meters per second
+
+config HTTP_SERVER_PORT
+	int "Server port"
+	default 8080
+	help
+	  Set the HTTP server port that will receive the plate data
+
+config HTTP_SERVER_IP
+	string "HTTP server IP"
+	default "192.168.68.228"
+	help
+	  Set the HTTP server IP that will receive the plate data
+
+config CONFIG_MAX_RECV_BUF_LEN
+	int "Buffer length for HTTP receive"
+	default 512
+	help
+	  Set the buffer length for the HTTP receive
 
 endmenu
