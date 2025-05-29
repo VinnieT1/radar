@@ -5,6 +5,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <zephyr/net/sntp.h>
+#include <zephyr/net/http/client.h>
+#include <zephyr/net/net_ip.h>
+#include <zephyr/net/socket.h>
+#include <zephyr/net/net_core.h>
 
 ZBUS_MSG_SUBSCRIBER_DEFINE(msub_camera_evt);
 
@@ -77,11 +81,20 @@ static int is_valid_plate(const char plate[])
 	return is_valid ? 0 : -EINVAL;
 }
 
+static void response_cb(struct http_response *rsp, enum http_final_call final_data, void *user_data)
+{
+	if (final_data == HTTP_DATA_FINAL) {
+		printf("HTTP response received: %s\n", rsp->http_status);
+	} else {
+		printf("HTTP response in progress...\n");
+	}
+}
+
 /**
  * @brief Validates a license plate and sends the data with timestamp.
  *
  * This function validates the license plate format, gets the current time
- * from an NTP server, adjusts it to Brazil time zone, and prepares the 
+ * from an NTP server, adjusts it to Brazil time zone, and prepares the
  * data for transmission to a server.
  *
  * @param plate The license plate string to process
@@ -96,6 +109,12 @@ static int validate_and_send(const char plate[], const char hash[])
 	time_t brazil_time;
 	struct tm *brazil_tm;
 
+	int sock;
+	struct sockaddr_in http_addr;
+	struct http_request req = {0};
+	static uint8_t recv_buf[1024];
+	char json_payload[128];
+
 	err = is_valid_plate(plate);
 	if (err) {
 		return err;
@@ -109,12 +128,54 @@ static int validate_and_send(const char plate[], const char hash[])
 	brazil_time = ts.seconds - (3 * 3600);
 	brazil_tm = gmtime(&brazil_time);
 
-	printk("Photo taken at: %04d-%02d-%02d %02d:%02d:%02d (Brazil time)\n",
-		brazil_tm->tm_year + 1900, brazil_tm->tm_mon + 1, brazil_tm->tm_mday,
-		brazil_tm->tm_hour, brazil_tm->tm_min, brazil_tm->tm_sec);
-
+	printf("Photo taken at: %04d-%02d-%02d %02d:%02d:%02d (Brazil time)\n",
+	       brazil_tm->tm_year + 1900, brazil_tm->tm_mon + 1, brazil_tm->tm_mday,
+	       brazil_tm->tm_hour, brazil_tm->tm_min, brazil_tm->tm_sec);
 
 	// SEND TO PYTHON SERVER
+	// Build JSON body
+	snprintf(json_payload, sizeof(json_payload), "{\"plate\":\"%s\",\"hash\":\"%s\"}", plate,
+		 hash);
+
+	// Create socket and connect
+	sock = zsock_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sock < 0) {
+		printf("Socket creation failed: %d\n", errno);
+		return -errno;
+	}
+
+	http_addr.sin_family = AF_INET;
+	http_addr.sin_port = htons(CONFIG_HTTP_SERVER_PORT);
+	zsock_inet_pton(AF_INET, CONFIG_HTTP_SERVER_IP, &http_addr.sin_addr);
+
+	err = zsock_connect(sock, (struct sockaddr *)&http_addr, sizeof(http_addr));
+	if (err < 0) {
+		printf("Failed to connect: %d\n", errno);
+		zsock_close(sock);
+		return -errno;
+	}
+
+	char host[16] = CONFIG_HTTP_SERVER_IP;
+	char port[6];
+	snprintf(port, sizeof(port), "%d", CONFIG_HTTP_SERVER_PORT);
+
+	// Prepare HTTP request
+	req.method = HTTP_POST;
+	req.url = "/";
+	req.host = CONFIG_HTTP_SERVER_IP;
+	req.protocol = "HTTP/1.1";
+	req.payload = json_payload;
+	req.payload_len = strlen(req.payload);
+	req.content_type_value = "application/json";
+	req.response = response_cb;
+	req.recv_buf = recv_buf;
+	req.recv_buf_len = sizeof(recv_buf);
+	req.host = host;
+	req.port = port;
+
+	http_client_req(sock, &req, 100, NULL);
+
+	zsock_close(sock);
 
 	return 0;
 }
@@ -122,7 +183,7 @@ static int validate_and_send(const char plate[], const char hash[])
 /**
  * @brief Main thread for processing and transmitting camera events.
  *
- * This thread waits for camera events from the zbus channel, processes the 
+ * This thread waits for camera events from the zbus channel, processes the
  * captured license plate data, validates it, and sends it to the server.
  * It also handles camera errors by requesting a new capture.
  *
@@ -162,7 +223,7 @@ void picture_transceiver_thread(void *ptr1, void *ptr2, void *ptr3)
 				printf("Server request timed out\n");
 				break;
 			default:
-				printf("Unexpected error: %d", err);
+				printf("Unexpected error: %d\n", err);
 				break;
 			}
 			break;
