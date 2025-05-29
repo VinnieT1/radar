@@ -60,7 +60,8 @@ static int is_valid_plate(const char plate[])
 		return -EINVAL;
 	}
 
-	// ARGENTINA LLNNNLL, BRASIL LLLNLNN, PARAGUAI LLLLNNN, URUGUAI LLLNNNN, VENEZUELA LLNNNLL
+	// ARGENTINA LLNNNLL ou LNNNLLL, BRASIL LLLNLNN, PARAGUAI LLLLNNN ou NNNLLLL, URUGUAI
+	// LLLNNNN, VENEZUELA LLNNNLL, BOLIVIA LLNNNNN
 	if (isupper(processed_plate[0]) && isupper(processed_plate[1]) &&
 	    isdigit(processed_plate[2]) && isdigit(processed_plate[3]) &&
 	    isdigit(processed_plate[4]) && isupper(processed_plate[5]) &&
@@ -75,6 +76,26 @@ static int is_valid_plate(const char plate[])
 		   isupper(processed_plate[2]) && isupper(processed_plate[3]) &&
 		   isdigit(processed_plate[4]) && isdigit(processed_plate[5]) &&
 		   isdigit(processed_plate[6])) {
+		is_valid = true;
+	} else if (isdigit(processed_plate[0]) && isdigit(processed_plate[1]) &&
+		   isdigit(processed_plate[2]) && isupper(processed_plate[3]) &&
+		   isupper(processed_plate[4]) && isupper(processed_plate[5]) &&
+		   isupper(processed_plate[6])) {
+		is_valid = true;
+	} else if (isupper(processed_plate[0]) && isupper(processed_plate[1]) &&
+		   isdigit(processed_plate[2]) && isdigit(processed_plate[3]) &&
+		   isdigit(processed_plate[4]) && isdigit(processed_plate[5]) &&
+		   isdigit(processed_plate[6])) {
+		is_valid = true;
+	} else if (isupper(processed_plate[0]) && isupper(processed_plate[1]) &&
+		   isdigit(processed_plate[2]) && isdigit(processed_plate[3]) &&
+		   isdigit(processed_plate[4]) && isdigit(processed_plate[5]) &&
+		   isdigit(processed_plate[6])) {
+		is_valid = true;
+	} else if (isupper(processed_plate[0]) && isdigit(processed_plate[1]) &&
+		   isdigit(processed_plate[2]) && isdigit(processed_plate[3]) &&
+		   isupper(processed_plate[4]) && isupper(processed_plate[5]) &&
+		   isupper(processed_plate[6])) {
 		is_valid = true;
 	}
 
