@@ -1,4 +1,6 @@
-# Electronic Radar with Zephyr RTOS in QEMU
+# ZRadar: an Emulated Electronic Radar with Zephyr RTOS in QEMU
+
+![alt text](/assets/ZRadarBG.png "ZRadar Logo")
 
 ## Project Description
 
@@ -35,11 +37,13 @@ The following options can be adjusted in `prj.conf` or via menuconfig:
 ### Block Diagram
 
 The Block Diagram of the architecture used in this project is represented by the image below:
-[Architecture Block Diagram](assets/block_diagram.png)
+![alt text](/assets/BlockDiagram.jpg "ZRadar Block Diagram")
+
+As soon as a car activates the first and then the second sensor, the system calculates the speed of the vehicle based on the time difference between the two sensor activations. If the speed exceeds the configured limit, a violation is detected, and a picture is taken of the vehicle's license plate. The license plate is then validated and, if the plate was read correctly, the violation data (plate, hash and timestamp) is sent to a HTTP service. The timestamp value is acquired by an NTP server request. The system also updates a display with the car speed and violation status.
 
 ### Threads and Functions
 
-* **Speed Processing Thread:** Receives sensor events, calculates speed, detects violations, and triggers the camera.
+* **Velocity Processing Thread:** Receives sensor events, calculates speed, detects violations, and triggers the camera.
 * **Sensor Functions:** Initializes and configures GPIOs, publishes events on ZBUS on interrupts when sensors are activated.
 * **Display Thread:** Updates the virtual display with current speed and violation status.
 * **Camera Thread:** Simulates image capture and generates vehicle license plate with hash. May return invalid plates randomly (intended).
