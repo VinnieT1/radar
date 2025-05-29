@@ -134,8 +134,9 @@ static int validate_and_send(const char plate[], const char hash[])
 
 	// SEND TO PYTHON SERVER
 	// Build JSON body
-	snprintf(json_payload, sizeof(json_payload), "{\"plate\":\"%s\",\"hash\":\"%s\"}", plate,
-		 hash);
+	snprintf(json_payload, sizeof(json_payload),
+		 "{\"plate\":\"%s\",\"hash\":\"%s\",\"timestamp\":\"%llu\"}", plate, hash,
+		 ts.seconds);
 
 	// Create socket and connect
 	sock = zsock_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
