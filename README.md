@@ -32,13 +32,18 @@ The following options can be adjusted in `prj.conf` or via menuconfig:
 
 ## Architecture and Module Operation
 
+### Block Diagram
+
+The Block Diagram of the architecture used in this project is represented by the image below:
+[Architecture Block Diagram](assets/block_diagram.png)
+
 ### Threads and Functions
 
 * **Speed Processing Thread:** Receives sensor events, calculates speed, detects violations, and triggers the camera.
-* **Sensor Thread:** Initializes and configures GPIOs, publishes events on ZBUS when sensors are activated.
+* **Sensor Functions:** Initializes and configures GPIOs, publishes events on ZBUS on interrupts when sensors are activated.
 * **Display Thread:** Updates the virtual display with current speed and violation status.
-* **Camera Thread:** Simulates image capture and generates vehicle license plate with hash. May return invalid plates based on configured probability.
-* **Network Thread:** Validates license plates and sends data to server via HTTP. Uses NTP to obtain date/time.
+* **Camera Thread:** Simulates image capture and generates vehicle license plate with hash. May return invalid plates randomly (intended).
+* **Picture Transceiver Thread:** Validates license plates and sends data to server via HTTP. Uses NTP to obtain date/time.
 
 ### Communication
 
