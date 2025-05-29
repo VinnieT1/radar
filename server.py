@@ -10,13 +10,19 @@ class SimplePostHandler(BaseHTTPRequestHandler):
             data = json.loads(body)
             print("Parsed JSON:")
             print(json.dumps(data, indent=2))
-        except Exception:
-            print("Body is not valid JSON or empty.")
 
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(b'Received')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'Received')
+        except Exception as e:
+            print("Body is not valid JSON or is empty.")
+            print(f"Error: {e}")
+
+            self.send_response(400)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'Invalid JSON')
 
 def run(server_class=HTTPServer, handler_class=SimplePostHandler, port=8080):
     server_address = ('', port)
