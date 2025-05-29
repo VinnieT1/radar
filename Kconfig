@@ -65,7 +65,7 @@ config HTTP_SERVER_IP
 	help
 	  Set the HTTP server IP that will receive the plate data
 
-config CONFIG_MAX_RECV_BUF_LEN
+config MAX_RECV_BUF_LEN
 	int "Buffer length for HTTP receive"
 	default 512
 	help

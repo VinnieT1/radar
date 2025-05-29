@@ -112,7 +112,7 @@ static int validate_and_send(const char plate[], const char hash[])
 	int sock;
 	struct sockaddr_in http_addr;
 	struct http_request req = {0};
-	static uint8_t recv_buf[1024];
+	static uint8_t recv_buf[CONFIG_MAX_RECV_BUF_LEN];
 	char json_payload[128];
 
 	err = is_valid_plate(plate);
