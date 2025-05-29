@@ -39,6 +39,17 @@ void car_thread(void *ptr1, void *ptr2, void *ptr3)
 	SENSOR_RELEASE(fixture2);
 	printk("Car starting...[ok]\n");
 
+	SENSOR_PRESS(fixture1);
+	SENSOR_RELEASE(fixture1);
+
+	k_msleep(40); // 40ms
+
+	printk("Vroom... (Sensor 2)\n");
+	SENSOR_PRESS(fixture2);
+	SENSOR_RELEASE(fixture2);
+
+	k_msleep(5000);
+
 	while (1) {
 		printk("Vroom... (Sensor 1)\n");
 
