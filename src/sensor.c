@@ -49,15 +49,6 @@ void sensor_activated(const struct device *dev, struct gpio_callback *cb, uint32
 	zbus_chan_pub(&chan_sensor_evt, &msg, K_NO_WAIT);
 }
 
-/**
- * @brief Initialize the sensor GPIO pins.
- *
- * This function configures the GPIO pins for both sensors as input pins and
- * instantiates the SNTP context. It checks if the GPIO devices are ready and
- * configures them accordingly.
- *
- * @return 0 on success, negative error code on failure.
- */
 int sensor_init(void)
 {
 	int err;
@@ -88,14 +79,6 @@ int sensor_init(void)
 	return 0;
 }
 
-/**
- * @brief Enable interrupts for the sensor GPIO pins.
- *
- * This function configures the GPIO pins for both sensor pins to trigger interrupts
- * on falling edges. It also initializes the callback function for handling sensor events.
- *
- * @return 0 on success, negative error code on failure.
- */
 int sensor_enable_interrupts(void)
 {
 	int err;
